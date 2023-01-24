@@ -1,0 +1,29 @@
+ # Web-cam
+    #if options == 'Webcam':
+        # cam_options = st.sidebar.selectbox('Webcam Channel',
+        #                                    ('Select Channel', '0', '1', '2', '3'), label_visibility="hidden")
+       
+        # Model
+        # if gpu_option == 'CPU':
+        #     model = custom(path_or_model=path_model_file)
+        # if gpu_option == 'GPU':
+        #     model = custom(path_or_model=path_model_file, gpu=True)
+        
+        #if len(cam_options) != 0:
+            #if not cam_options == 'Select Channel':
+    # cam_options =  '0'   
+    # if cam_options == "0":
+    # cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    #     #stframe1 = st.empty()
+    # stframe2 = st.empty()
+    #     #stframe3 = st.empty()
+    # #while True:
+    # while (cap.isOpened()):
+    #     success, img = cap.read()
+    #     if not success:
+    #             st.error(
+    #                     f'Webcam channel {cap} NOT working\n \
+    #                     Change channel or Connect webcam properly!!',
+    #                     icon="🚨"
+    #                 )
+    #             break
