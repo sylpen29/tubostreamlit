@@ -6,7 +6,7 @@ import numpy as np
 
 import streamlit as st
 
-model_yolo = torch.hub.load('ultralytics/yolov5', 'custom', path='Models/last.pt', force_reload=True)
+model_yolo = torch.hub.load('ultralytics/yolov5', 'custom', path='last_cas_pratique.pt', force_reload=True)
 
 
 Label = ['Casque_NO','Casque_OK','Gilet_NO', 'Gilet_OK']
