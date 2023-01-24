@@ -14,17 +14,17 @@ import subprocess
 import pandas as pd
 import io
 import av
-from streamlit_webrtc import WebRtcMode, VideoHTMLAttributes, webrtc_streamer
+from streamlit_webrtc import WebRtcMode, VideoHTMLAttributes, webrtc_streamer, VideoProcessorBase
 
 
-def get_gpu_memory():
-    result = subprocess.check_output(
-        [
-            'nvidia-smi', '--query-gpu=memory.used',
-            '--format=csv,nounits,noheader'
-        ], encoding='utf-8')
-    gpu_memory = [int(x) for x in result.strip().split('\n')]
-    return gpu_memory[0]
+# def get_gpu_memory():
+#     result = subprocess.check_output(
+#         [
+#             'nvidia-smi', '--query-gpu=memory.used',
+#             '--format=csv,nounits,noheader'
+#         ], encoding='utf-8')
+#     gpu_memory = [int(x) for x in result.strip().split('\n')]
+#     return gpu_memory[0]
 
 # def color_picker_fn(classname, key):
 #     color_picke = st.sidebar.color_picker(f'{classname}:', '#ff0003', key=key)
@@ -112,7 +112,7 @@ if path_to_class_txt is not None:
     model = custom(path_or_model=path_model_file)
 
     
-class VideoProcessor:
+class VideoProcessor(VideoProcessorBase):
     def recv(self, frame):
         frm = frame.to_ndarray(format="bgr24")
 
@@ -137,7 +137,7 @@ class VideoProcessor:
                         plot_one_box(bbox, frm, label=class_labels[id],
                                     color=color_pick_list[id], line_thickness=draw_thick)
                         current_no_class.append([class_labels[id]])
-       
+        
         # FPS
         # c_time = time.time()
         # fps = 1 / (c_time - p_time)
