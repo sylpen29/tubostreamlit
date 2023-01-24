@@ -120,7 +120,7 @@ class VideoProcessor(VideoProcessorBase):
         current_no_class = []
         results = model(frm)
 
-        stframe2 = st.empty()
+        
 
         
                     # Bounding Box
@@ -149,7 +149,7 @@ class VideoProcessor(VideoProcessorBase):
         class_fq = json.loads(class_fq)
         df_fq = pd.DataFrame(class_fq.items(), columns=['Forme', 'Quantité'])
         
-       
+        stframe2 = st.empty()       
         with stframe2.container():
             st.markdown("<h3>Nombre de tubes</h3>", unsafe_allow_html=True)
             st.dataframe(df_fq, use_container_width=True)
