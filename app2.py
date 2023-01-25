@@ -174,7 +174,7 @@ webrtc_streamer( key="Tubocomptage",
                 mode=WebRtcMode.SENDRECV,
                 # client_settings=WEBRTC_CLIENT_SETTINGS, 
                 media_stream_constraints={"video": True, "audio": False},
-                # rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+                rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
                 video_processor_factory=VideoProcessor, 
                 video_html_attrs=VideoHTMLAttributes( autoPlay=True, controls=True, style={"width": "100%"} ))    
    
