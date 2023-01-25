@@ -168,11 +168,12 @@ class VideoProcessor:
     
 
 
-muted = st.checkbox("Mute")
+# muted = st.checkbox("Mute")
 
 webrtc_streamer( key="Tubocomptage",
                 mode=WebRtcMode.SENDRECV,
-                client_settings=WEBRTC_CLIENT_SETTINGS, 
+                # client_settings=WEBRTC_CLIENT_SETTINGS, 
+                media_stream_constraints={"video": True, "audio": False},
                 video_processor_factory=VideoProcessor, 
-                video_html_attrs=VideoHTMLAttributes( autoPlay=True, controls=True, style={"width": "100%"}, muted=muted ))    
+                video_html_attrs=VideoHTMLAttributes( autoPlay=True, controls=True, style={"width": "100%"} ))    
    
