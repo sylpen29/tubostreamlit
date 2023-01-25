@@ -14,7 +14,7 @@ import subprocess
 import pandas as pd
 import io
 import av
-from streamlit_webrtc import WebRtcMode, VideoHTMLAttributes, webrtc_streamer, VideoProcessorBase
+from streamlit_webrtc import WebRtcMode, VideoHTMLAttributes, webrtc_streamer, ClientSettings
 
 
 # def get_gpu_memory():
@@ -68,6 +68,14 @@ path_model_file = "best.pt"
 with open('class.txt', 'r') as file:
           lines = file.read()
 path_to_class_txt = io.StringIO(lines)
+
+
+WEBRTC_CLIENT_SETTINGS = ClientSettings(
+        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+        media_stream_constraints={"video": True, "audio": False},
+    )
+
+
                                                                 # read class.txt
 # bytes_data = path_to_class_txt.getvalue()
 # class_labels = bytes_data.decode('utf-8').split("\n")
@@ -112,7 +120,7 @@ if path_to_class_txt is not None:
     model = custom(path_or_model=path_model_file)
 
     
-class VideoProcessor(VideoProcessorBase):
+class VideoProcessor:
     def recv(self, frame):
         frm = frame.to_ndarray(format="bgr24")
 
@@ -162,7 +170,9 @@ class VideoProcessor(VideoProcessorBase):
 
 muted = st.checkbox("Mute")
 
-webrtc_streamer( key="Tubocomptage", 
+webrtc_streamer( key="Tubocomptage",
+                mode=WebRtcMode.SENDRECV,
+                client_settings=WEBRTC_CLIENT_SETTINGS, 
                 video_processor_factory=VideoProcessor, 
                 video_html_attrs=VideoHTMLAttributes( autoPlay=True, controls=True, style={"width": "100%"}, muted=muted ))    
    
