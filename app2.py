@@ -70,10 +70,10 @@ with open('class.txt', 'r') as file:
 path_to_class_txt = io.StringIO(lines)
 
 
-WEBRTC_CLIENT_SETTINGS = ClientSettings(
-        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-        media_stream_constraints={"video": True, "audio": False},
-    )
+# WEBRTC_CLIENT_SETTINGS = ClientSettings(
+#         rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+#         media_stream_constraints={"video": True, "audio": False},
+#     )
 
 
                                                                 # read class.txt
@@ -174,6 +174,7 @@ webrtc_streamer( key="Tubocomptage",
                 mode=WebRtcMode.SENDRECV,
                 # client_settings=WEBRTC_CLIENT_SETTINGS, 
                 media_stream_constraints={"video": True, "audio": False},
+                rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
                 video_processor_factory=VideoProcessor, 
                 video_html_attrs=VideoHTMLAttributes( autoPlay=True, controls=True, style={"width": "100%"} ))    
    
