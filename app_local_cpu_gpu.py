@@ -64,13 +64,12 @@ if path_to_class_txt is not None:
 
     options = 'Webcam'
     
-    gpu_option = st.sidebar.radio(
-        'PU Options:', ('CPU', 'GPU'))
+    gpu_option = 'CPU'
 
-    if options == 'Webcam':
-         cam_options = st.sidebar.selectbox('Webcam Channel',
-                                             ('Select Channel', '0', '1', '2', '3'))
-
+    # if options == 'Webcam':
+    #      cam_options = st.sidebar.selectbox('Webcam Channel',
+    #                                          ('Select Channel', '0', '1', '2', '3'))
+    cam_options = '0'
     # if not torch.cuda.is_available():
     #     st.sidebar.warning('CUDA Not Available, So choose CPU', icon="⚠️")
     # else:
@@ -154,7 +153,7 @@ if path_to_class_txt is not None:
     
     
     # Model
-    model = custom(path_or_model=path_model_file, gpu=True)
+    model = custom(path_or_model=path_model_file, gpu=False)
 
 
     if len(cam_options) != 0:
