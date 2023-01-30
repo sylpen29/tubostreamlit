@@ -71,7 +71,7 @@ if path_to_class_txt is not None:
     draw_thick = st.sidebar.slider(
         'Draw Thickness:', min_value=1,
         max_value=20, value=3
-    )
+)
     
     # read class.txt
     bytes_data = path_to_class_txt.getvalue()

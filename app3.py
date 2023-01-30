@@ -14,17 +14,10 @@ import subprocess
 import pandas as pd
 import io
 import av
+import threading
 from streamlit_webrtc import WebRtcMode, VideoHTMLAttributes, webrtc_streamer
 
 
-def get_gpu_memory():
-    result = subprocess.check_output(
-        [
-            'nvidia-smi', '--query-gpu=memory.used',
-            '--format=csv,nounits,noheader'
-        ], encoding='utf-8')
-    gpu_memory = [int(x) for x in result.strip().split('\n')]
-    return gpu_memory[0]
 
 # def color_picker_fn(classname, key):
 #     color_picke = st.sidebar.color_picker(f'{classname}:', '#ff0003', key=key)
@@ -54,17 +47,11 @@ FRAME_WINDOW = st.image(sample_img, channels='BGR')
 st.sidebar.title('réglages')
 
                                                                 # path to model
-# path_model_file = st.sidebar.text_input(
-#     'path to YOLOv7 Model:',
-#     'best.pt', label_visibility="hidden"
-# )
+
 path_model_file = "best.pt"
 
                                                                     # Class txt
-# path_to_class_txt = st.sidebar.file_uploader(
-#         'class.txt:', type=['txt'], label_visibility="hidden"
 
-# )
 with open('class.txt', 'r') as file:
           lines = file.read()
 path_to_class_txt = io.StringIO(lines)
@@ -74,9 +61,7 @@ path_to_class_txt = io.StringIO(lines)
 
 
                                                                 # read class.txt
-# bytes_data = path_to_class_txt.getvalue()
-# class_labels = bytes_data.decode('utf-8').split("\n")
-# color_pick_list = []
+
 bytes_data = path_to_class_txt.getvalue()
 class_labels = bytes_data.split("\n")
 color_pick_list = []
@@ -87,27 +72,10 @@ for i in range(len(class_labels)):
     color_pick_list.append(color)
 
 
+
 if path_to_class_txt is not None:
 
-    # options = st.sidebar.radio(
-    #     'Options:', ('Webcam', 'Image', 'Video', 'RTSP'), index=1)
-    # options = 'Webcam'
-    # gpu_option = st.sidebar.radio(
-    #     'PU Options:', ('CPU', 'GPU'))
-
-    gpu_option = 'GPU'
-    
-    if gpu_option == 'GPU':
-        model = custom(path_or_model=path_model_file, gpu=True)
-
-    if not torch.cuda.is_available():
-        st.sidebar.warning('ready!', icon="🚨")
-    else:
-        st.sidebar.success(
-            'ready!',
-            icon="✅"
-        )
-
+   
     # Confidence
     confidence = st.sidebar.slider(
         'indice de confiance', min_value=0.0, max_value=1.0, value=0.55)
@@ -119,22 +87,32 @@ if path_to_class_txt is not None:
     )
 
 
-    
+    model = custom(path_or_model=path_model_file)
 
     
 class VideoProcessor:
-    
-    def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
-        frm = frame.to_ndarray(format="bgr24")
 
-        bbox_list = []
-        current_no_class = []
-        results = model(frm)
+    def __init__(self):
+        pass
+
+
+      
+    def recv(self, frame, bbox_list, current_no_class):
+        self.frame = frame
+        self.bbox_list = bbox_list
+        self.current_no_class = current_no_class
+        
+        
+        self.frame = frame.to_ndarray(format="bgr24")
+        self.bbox_list = []
+        self.current_no_class = []  
+        results = model(self.frame)
 
         
 
         
                     # Bounding Box
+    
         box = results.pandas().xyxy[0]
         class_list = box['class'].to_list()
 
@@ -142,39 +120,50 @@ class VideoProcessor:
                 xmin, ymin, xmax, ymax, conf = int(box['xmin'][i]), int(box['ymin'][i]), int(box['xmax'][i]), \
                     int(box['ymax'][i]), box['confidence'][i]
                 if conf > confidence:
-                    bbox_list.append([xmin, ymin, xmax, ymax])
-        if len(bbox_list) != 0:
-                for bbox, id in zip(bbox_list, class_list):
-                        plot_one_box(bbox, frm, label=class_labels[id],
+                    self.bbox_list.append([xmin, ymin, xmax, ymax])
+        if len(self.bbox_list) != 0:
+                for bbox, id in zip(self.bbox_list, class_list):
+                        plot_one_box(bbox, self.frame, label=class_labels[id],
                                     color=color_pick_list[id], line_thickness=draw_thick)
-                        current_no_class.append([class_labels[id]])
-        
-        # FPS
-        # c_time = time.time()
-        # fps = 1 / (c_time - p_time)
-        # p_time = c_time
+                        self.current_no_class.append([class_labels[id]])
 
-                                   # Current number of classes
-        class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
+
+    def compter(self):
+
+        stframe2 = st.empty()                                  
+        class_fq = dict(Counter(i for sub in self.current_no_class for i in set(sub)))
         class_fq = json.dumps(class_fq, indent = 4)
         class_fq = json.loads(class_fq)
         df_fq = pd.DataFrame(class_fq.items(), columns=['Forme', 'Quantité'])
-        
-        stframe2 = st.empty()       
+                
+            
         with stframe2.container():
             st.markdown("<h3>Nombre de tubes</h3>", unsafe_allow_html=True)
-            st.dataframe(df_fq, use_container_width=True)
+            st.dataframe(df_fq, use_container_width=True)                        
         
-        #FRAME_WINDOW.image(frm, channels='BGR')
-        return av.VideoFrame.from_ndarray(frm, format='bgr24')
+        return av.VideoFrame.from_ndarray(self.frame, format='bgr24')    
+  
 
+                                # Current number of classes
 
-
-ctx = webrtc_streamer( key="Tubocomptage",
+     
+           
+    
+webrtc_ctx = webrtc_streamer( key="Tubocomptage",
                 mode=WebRtcMode.SENDRECV, 
                 media_stream_constraints={"video": True, "audio": False},
                 rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
                 video_processor_factory=VideoProcessor,
+                video_html_attrs=VideoHTMLAttributes( autoPlay=True, controls=True, style={"width": "100%"} )) 
 
-                video_html_attrs=VideoHTMLAttributes( autoPlay=True, controls=True, style={"width": "100%"} ))    
+
+
+
+
    
+
+
+
+
+
+              
