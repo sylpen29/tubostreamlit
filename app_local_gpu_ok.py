@@ -193,10 +193,10 @@ if path_to_class_txt is not None:
                         current_no_class.append([class_labels[id]])
                 FRAME_WINDOW.image(img, channels='BGR')
 
-                    # FPS
-                c_time = time.time()
-                fps = 1 / (c_time - p_time)
-                p_time = c_time
+                #     # FPS
+                # c_time = time.time()
+                # fps = 1 / (c_time - p_time)
+                # p_time = c_time
                     
                     # Current number of classes
                 class_fq = dict(Counter(i for sub in current_no_class for i in set(sub)))
@@ -206,12 +206,12 @@ if path_to_class_txt is not None:
                    
                     
                     # Updating Inference results
-                with stframe1.container():
-                    st.markdown("<h5>Inférences</h5>", unsafe_allow_html=True)
-                    if round(fps, 4)>1:
-                        st.markdown(f"<h6 style='color:green;'>Fps: {round(fps, 4)}</h6>", unsafe_allow_html=True)
-                    else:
-                        st.markdown(f"<h6 style='color:red;'>Fps: {round(fps, 4)}</h6>", unsafe_allow_html=True)
+                # with stframe1.container():
+                #     st.markdown("<h5>Inférences</h5>", unsafe_allow_html=True)
+                #     if round(fps, 4)>1:
+                #         st.markdown(f"<h6 style='color:green;'>Fps: {round(fps, 4)}</h6>", unsafe_allow_html=True)
+                #     else:
+                #         st.markdown(f"<h6 style='color:red;'>Fps: {round(fps, 4)}</h6>", unsafe_allow_html=True)
 
                 with stframe2.container():
                     st.markdown("<h3>Nombre de tubes par forme</h3>", unsafe_allow_html=True)
